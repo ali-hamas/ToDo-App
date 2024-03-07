@@ -1,4 +1,3 @@
-import "./App.css";
 import editLogo from "./assets/edit.svg";
 import deleteLogo from "./assets/delete.svg";
 import { useState, useEffect } from "react";
