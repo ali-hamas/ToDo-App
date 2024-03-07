@@ -1,19 +1,38 @@
 import editLogo from "./assets/edit.svg";
 import deleteLogo from "./assets/delete.svg";
 import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 function App() {
   const [FormText, setFormText] = useState("");
+  const [AllTodos, setAllTodos] = useState([]);
 
   const handleFormChange = (e) =>{
-    setFormText(e.target.value)
+    setFormText(e.target.value);
   }
 
-  return <>
-  <div className="body-div flex h-screen w-full items-center justify-center">
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setAllTodos([...AllTodos, { id: uuidv4(), FormText, isCompleted: false }]);
+    setFormText("");
+  };
+
+  const handleCheckbox = (e) => {
+    let id = e.target.name;
+    let index = AllTodos.findIndex((item) => {
+      return item.id === id;
+    });
+    let newTodos = [...AllTodos];
+    newTodos[index].isCompleted = !newTodos[index].isCompleted;
+    setAllTodos(newTodos);
+  };
+
+  return (
+    <>
+      <div className="body-div flex h-screen w-full items-center justify-center">
         <div className="flex max-h-[80vh] w-[90%] flex-col gap-5 overflow-y-auto overflow-x-hidden rounded-xl bg-white p-5 py-5 font-bold shadow-md sm:w-[500px] sm:px-8">
           <h1 className="text-2xl text-slate-800">ToDo List</h1>
-          <form className="form flex gap-3">
+          <form className="form flex gap-3" onSubmit={handleSubmit}>
             <input
               type="text"
               placeholder="Add your todo"
@@ -30,20 +49,26 @@ function App() {
             </button>
           </form>
           <div className="added-todos flex flex-col gap-3">
+            {AllTodos.map((item) => {
+              return (
                 <div
+                  key={item.id}
                   className="todo relative flex items-center gap-3  pl-6 pr-16"
                 >
                   <input
                     type="checkbox"
+                    name={item.id}
                     className="todo-checkbox absolute left-0 top-[5px] cursor-pointer rounded-full checked:bg-indigo-600 checked:hover:bg-indigo-600 focus:ring-0"
+                    value={item.isCompleted}
+                    onChange={handleCheckbox}
                   />
                   <div
-                    className="todo-text min-w-full font-normal"
-                  >Text shown here
+                    className={`todo-text min-w-full font-normal ${item.isCompleted ? "text-slate-500 line-through" : "text-slate-800"}`}
+                  >
+                    {item.FormText}
                   </div>
                   <div className="todo-buttons absolute right-0 top-0 ml-auto flex gap-2">
                     <button
-                      
                       className="flex h-[23px] w-[23px] items-center justify-center rounded-full bg-indigo-500 text-white transition-all duration-200 hover:bg-indigo-700"
                     >
                       <img src={editLogo} className="h-[10px] w-[10px]" />
@@ -55,10 +80,13 @@ function App() {
                     </button>
                   </div>
                 </div>
+              );
+            })}
           </div>
         </div>
       </div>
-  </>;
+    </>
+  );
 }
 
 export default App;
