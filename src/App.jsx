@@ -7,14 +7,30 @@ function App() {
   const [FormText, setFormText] = useState("");
   const [AllTodos, setAllTodos] = useState([]);
 
-  const handleFormChange = (e) =>{
+  const handleFormChange = (e) => {
     setFormText(e.target.value);
-  }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setAllTodos([...AllTodos, { id: uuidv4(), FormText, isCompleted: false }]);
     setFormText("");
+  };
+
+  const handleEdit = (e, id) => {
+    let t = AllTodos.filter((item) => item.id === id);
+    setFormText(t[0].FormText);
+    let newTodos = AllTodos.filter((i) => {
+      return i.id !== id;
+    });
+    setAllTodos(newTodos);
+  };
+
+  const handleDelete = (e, id) => {
+    let newTodos = AllTodos.filter((item) => {
+      return item.id !== id;
+    });
+    setAllTodos(newTodos);
   };
 
   const handleCheckbox = (e) => {
@@ -26,7 +42,6 @@ function App() {
     newTodos[index].isCompleted = !newTodos[index].isCompleted;
     setAllTodos(newTodos);
   };
-
   return (
     <>
       <div className="body-div flex h-screen w-full items-center justify-center">
@@ -69,11 +84,15 @@ function App() {
                   </div>
                   <div className="todo-buttons absolute right-0 top-0 ml-auto flex gap-2">
                     <button
+                      onClick={(e) => handleEdit(e, item.id)}
                       className="flex h-[23px] w-[23px] items-center justify-center rounded-full bg-indigo-500 text-white transition-all duration-200 hover:bg-indigo-700"
                     >
                       <img src={editLogo} className="h-[10px] w-[10px]" />
                     </button>
                     <button
+                      onClick={(e) => {
+                        handleDelete(e, item.id);
+                      }}
                       className="flex h-[23px] w-[23px] items-center justify-center rounded-full bg-red-500 text-white transition-all duration-200 hover:bg-red-600"
                     >
                       <img src={deleteLogo} className="h-[10px] w-[10px]" />
