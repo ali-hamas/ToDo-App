@@ -1,11 +1,20 @@
+import "./App.css";
 import editLogo from "./assets/edit.svg";
 import deleteLogo from "./assets/delete.svg";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 function App() {
   const [FormText, setFormText] = useState("");
   const [AllTodos, setAllTodos] = useState([]);
+
+  useEffect(() => {
+    let todoString = localStorage.getItem("todos");
+    if (todoString) {
+      let todos = JSON.parse(localStorage.getItem("todos"));
+      setAllTodos(todos);
+    }
+  }, []);
 
   const handleFormChange = (e) => {
     setFormText(e.target.value);
@@ -15,22 +24,7 @@ function App() {
     e.preventDefault();
     setAllTodos([...AllTodos, { id: uuidv4(), FormText, isCompleted: false }]);
     setFormText("");
-  };
-
-  const handleEdit = (e, id) => {
-    let t = AllTodos.filter((item) => item.id === id);
-    setFormText(t[0].FormText);
-    let newTodos = AllTodos.filter((i) => {
-      return i.id !== id;
-    });
-    setAllTodos(newTodos);
-  };
-
-  const handleDelete = (e, id) => {
-    let newTodos = AllTodos.filter((item) => {
-      return item.id !== id;
-    });
-    setAllTodos(newTodos);
+    saveToLocalStorage();
   };
 
   const handleCheckbox = (e) => {
@@ -41,7 +35,31 @@ function App() {
     let newTodos = [...AllTodos];
     newTodos[index].isCompleted = !newTodos[index].isCompleted;
     setAllTodos(newTodos);
+    saveToLocalStorage();
   };
+
+  const handleEdit = (e, id) => {
+    let t = AllTodos.filter((item) => item.id === id);
+    setFormText(t[0].FormText);
+    let newTodos = AllTodos.filter((i) => {
+      return i.id !== id;
+    });
+    setAllTodos(newTodos);
+    saveToLocalStorage();
+  };
+
+  const handleDelete = (e, id) => {
+    let newTodos = AllTodos.filter((item) => {
+      return item.id !== id;
+    });
+    setAllTodos(newTodos);
+    saveToLocalStorage();
+  };
+
+  const saveToLocalStorage = () => {
+    localStorage.setItem("todos", JSON.stringify(AllTodos));
+  };
+
   return (
     <>
       <div className="body-div flex h-screen w-full items-center justify-center">
@@ -74,7 +92,7 @@ function App() {
                     type="checkbox"
                     name={item.id}
                     className="todo-checkbox absolute left-0 top-[5px] cursor-pointer rounded-full checked:bg-indigo-600 checked:hover:bg-indigo-600 focus:ring-0"
-                    value={item.isCompleted}
+                    checked={item.isCompleted}
                     onChange={handleCheckbox}
                   />
                   <div
