@@ -80,7 +80,7 @@ function App() {
               Add
             </button>
           </form>
-          <div className="added-todos flex flex-col gap-3">
+          <div className="added-todos flex h-full flex-col-reverse gap-3 overflow-auto">
             {AllTodos.map((item) => {
               return (
                 <div
